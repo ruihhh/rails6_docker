@@ -1,0 +1,33 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7.26
+    environment:
+      MYSQL_ROOT_PASSWORD: 'pass'
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql:/var/lib/mysql/data
+      - ./docker/mysql/charset.cnf:/etc/mysql/conf.d/charset.cnf
+
+  ruby:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      TZ: 'Asia/Tokyo'
+      RAILS_ENV: development
+      DATABASE_URL: mysql2://root:pass@mysql:3306
+      SECRET_KEY_BASE: hogehoge
+    command: /bin/sh -c "rm -f /usr/src/app/tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/usr/src/app
+    links:
+      - mysql
+    depends_on:
+      - mysql
+
+volumes:
+  mysql:
