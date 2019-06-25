@@ -9,7 +9,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - mysql:/var/lib/mysql/data
+      - mysql:/var/lib/mysql
       - ./docker/mysql/charset.cnf:/etc/mysql/conf.d/charset.cnf
 
   ruby:
