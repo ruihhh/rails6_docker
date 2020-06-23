@@ -1,6 +1,6 @@
 FROM ruby:2.7.1-buster
 
-RUN apt-get update && apt-get install -y nodejs default-mysql-client --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y default-mysql-client --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
 apt-get install nodejs
