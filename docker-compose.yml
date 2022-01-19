@@ -1,0 +1,54 @@
+version: "3"
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+  environment:
+    TZ: 'Asia/Tokyo'
+    DATABASE_URL: 'mysql2://root:pass@mysql:3306'
+    BUNDLE_PATH: /bundle/vendor
+    WEBPACKER_DEV_SERVER_HOST: webpacker
+    DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL: 'true'
+  volumes:
+    - .:/usr/src/app
+    - bundle_path:/bundle
+    - node_path:/usr/src/app/node_modules
+
+services:
+  mysql:
+    image: mysql:8.0.27
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'pass'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./docker/mysql/charset.cnf:/etc/mysql/conf.d/charset.cnf
+
+  ruby:
+    <<: *app
+    command: /bin/sh -c "rm -f /usr/src/app/tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    stdin_open: true
+    tty: true
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    ports:
+      - '3000:3000'
+
+  webpacker:
+    <<: *app
+    command: /bin/sh -c "bundle exec ./bin/webpack-dev-server"
+    mem_limit: 256m
+    environment:
+      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+    ports:
+      - '3035:3035'
+
+volumes:
+  bundle_path:
+  node_path:
+  mysql:

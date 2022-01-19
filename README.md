@@ -4,6 +4,7 @@
 
 ```bash
 docker-compose build
+docker-compose run --rm ruby bundle install
 ```
 
 ## rails new

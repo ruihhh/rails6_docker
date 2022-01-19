@@ -1,8 +1,8 @@
-FROM ruby:2.7.2-buster
+FROM ruby:3.0.3-bullseye
 
 RUN apt-get update && apt-get install -y default-mysql-client --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
 apt-get install nodejs
 
 RUN apt-get update && apt-get install -y curl apt-transport-https wget && \
@@ -15,5 +15,8 @@ WORKDIR /usr/src/app
 
 COPY Gemfile /usr/src/app/
 COPY Gemfile.lock /usr/src/app/
+COPY package.json /usr/src/app/
+COPY yarn.lock /usr/src/app/
 
+RUN yarn install --check-files
 RUN bundle install -j18
